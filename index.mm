@@ -34,6 +34,11 @@ std::string ConvertAuthorizationStatus(AVAuthorizationStatus status) {
   }
 }
 
+bool isMojave() {
+    NSOperatingSystemVersion minimumSupportedOSVersion = { .majorVersion = 10, .minorVersion = 14, .patchVersion = 0 };
+    return [NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:minimumSupportedOSVersion];
+}
+
 struct Baton {
     uv_work_t request;
     Persistent<Function> callback;
@@ -96,9 +101,7 @@ void AskForMediaAccess(const v8::FunctionCallbackInfo<Value>& args) {
     Local<Function> cbFunc = Local<Function>::Cast(args[1]);
 
     if (auto type = ParseMediaType(mediaType)) {
-        NSOperatingSystemVersion minimumSupportedOSVersion = { .majorVersion = 10, .minorVersion = 14, .patchVersion = 0 };
-        BOOL isSupported = [NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:minimumSupportedOSVersion];
-        if (isSupported) {
+        if (isMojave()) {
             Baton *baton = new Baton;
             baton->type = type;
             baton->callback.Reset(isolate, cbFunc);
@@ -133,7 +136,7 @@ void GetMediaAccessStatus(const v8::FunctionCallbackInfo<Value>& args) {
     std::string mediaType(*mediaTypeValue);
         
     if (auto type = ParseMediaType(mediaType)) {
-        if (@available(macOS 10.14, *)) {
+        if (isMojave()) {
             args.GetReturnValue().Set(String::NewFromUtf8(isolate, ConvertAuthorizationStatus(
                     [AVCaptureDevice authorizationStatusForMediaType:type]).c_str()));
         } else {
