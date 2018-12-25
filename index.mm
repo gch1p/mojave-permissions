@@ -96,7 +96,9 @@ void AskForMediaAccess(const v8::FunctionCallbackInfo<Value>& args) {
     Local<Function> cbFunc = Local<Function>::Cast(args[1]);
 
     if (auto type = ParseMediaType(mediaType)) {
-        if (@available(macOS 10.14, *)) {
+        NSOperatingSystemVersion minimumSupportedOSVersion = { .majorVersion = 10, .minorVersion = 14, .patchVersion = 0 };
+        BOOL isSupported = [NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:minimumSupportedOSVersion];
+        if (isSupported) {
             Baton *baton = new Baton;
             baton->type = type;
             baton->callback.Reset(isolate, cbFunc);
