@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <uv.h>
+#include <string>
 
 #import <AVFoundation/AVFoundation.h>
 
