@@ -11,5 +11,5 @@
     "install": "node-gyp rebuild",
     "test": "node index.js"
   },
-  "version": "1.0.2"
+  "version": "1.0.3"
 }
