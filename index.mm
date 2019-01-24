@@ -75,7 +75,7 @@ static void DelayAsyncAfter(uv_work_t *req,int status) {
 
     Local<Function>::New(isolate, baton->callback)->Call(isolate->GetCurrentContext()->Global(), 1, argv);
     baton->callback.Reset();
-    
+
     delete baton;
 }
 
@@ -119,7 +119,7 @@ void AskForMediaAccess(const v8::FunctionCallbackInfo<Value>& args) {
         String::NewFromUtf8(isolate, "invalid media type")));
     }
 
-    args.GetReturnValue().Set(Undefined(isolate)); 
+    args.GetReturnValue().Set(Undefined(isolate));
 }
 
 void GetMediaAccessStatus(const v8::FunctionCallbackInfo<Value>& args) {
@@ -134,7 +134,7 @@ void GetMediaAccessStatus(const v8::FunctionCallbackInfo<Value>& args) {
 
     String::Utf8Value mediaTypeValue(args[0]);
     std::string mediaType(*mediaTypeValue);
-        
+
     if (auto type = ParseMediaType(mediaType)) {
         if (isMojave()) {
             args.GetReturnValue().Set(String::NewFromUtf8(isolate, ConvertAuthorizationStatus(
@@ -146,10 +146,10 @@ void GetMediaAccessStatus(const v8::FunctionCallbackInfo<Value>& args) {
     } else {
         isolate->ThrowException(Exception::TypeError(
             String::NewFromUtf8(isolate, "invalid media type")));
-    }     
+    }
 }
 
-void Init(Handle<Object> exports) {
+void Init(Local<Object> exports) {
     NODE_SET_METHOD(exports, "getMediaAccessStatus", GetMediaAccessStatus);
     NODE_SET_METHOD(exports, "askForMediaAccess", AskForMediaAccess);
 }
